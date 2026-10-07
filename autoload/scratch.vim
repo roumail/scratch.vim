@@ -1,0 +1,54 @@
+function! scratch#new(bang) abort
+  if !a:bang
+    vsplit
+  endif
+  noswapfile hide enew
+  setlocal buftype=nofile bufhidden=wipe
+  let l:idx = 1
+  while bufexists('scratch' . l:idx)
+    let l:idx += 1
+  endwhile
+  execute 'file scratch' . l:idx
+endfunction
+
+function! scratch#from(cmd) abort
+  enew
+  setlocal buftype=nofile bufhidden=wipe noswapfile
+  call setline(1, systemlist(a:cmd))
+endfunction
+
+function! scratch#buf(bang, line1, line2, buf) abort
+  if empty(a:buf) || a:buf ==# '%'
+    let l:src = bufnr('%')
+    let l:lines = getline(a:line1, a:line2)
+  else
+    let l:src = a:buf =~# '^\d\+$' ? str2nr(a:buf) : bufnr(a:buf)
+    if l:src < 1 || !bufexists(l:src)
+      echoerr 'ScratchBuf: no buffer matching ' . a:buf
+      return
+    endif
+    call bufload(l:src)
+    let l:lines = getbufline(l:src, 1, '$')
+  endif
+  let l:ft = getbufvar(l:src, '&filetype')
+
+  call scratch#new(a:bang)
+  call setline(1, l:lines)
+  let &l:filetype = l:ft
+endfunction
+
+function! scratch#save(bang, path) abort
+  if &buftype !=# 'nofile'
+    echoerr 'Not a scratch buffer'
+    return
+  endif
+  let l:path = a:path
+  if empty(l:path)
+    call mkdir(g:scratch_dir, 'p')
+    let l:path = g:scratch_dir . '/' . strftime('%Y%m%d-%H%M%S') . '.txt'
+  endif
+  execute 'keepalt file' fnameescape(fnamemodify(l:path, ':p'))
+  setlocal buftype= bufhidden= swapfile
+  execute 'write' . (a:bang ? '!' : '')
+  filetype detect
+endfunction
