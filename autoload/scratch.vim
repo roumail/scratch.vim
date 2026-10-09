@@ -24,7 +24,15 @@ function! scratch#buf(bang, line1, line2, buf) abort
   else
     let l:src = a:buf =~# '^\d\+$' ? str2nr(a:buf) : bufnr(a:buf)
     if l:src < 1 || !bufexists(l:src)
-      echoerr 'ScratchBuf: no buffer matching ' . a:buf
+      " Not a buffer: a file path, read without opening it
+      let l:path = expand(a:buf)
+      if !filereadable(l:path)
+        echoerr 'ScratchBuf: no buffer or file matching ' . a:buf
+        return
+      endif
+      call scratch#new(a:bang)
+      call setline(1, readfile(l:path))
+      execute 'doautocmd filetypedetect BufRead' fnameescape(l:path)
       return
     endif
     call bufload(l:src)
@@ -35,6 +43,12 @@ function! scratch#buf(bang, line1, line2, buf) abort
   call scratch#new(a:bang)
   call setline(1, l:lines)
   let &l:filetype = l:ft
+endfunction
+
+" :ScratchBuf completion: buffer names, then file paths
+function! scratch#complete_buf(arglead, cmdline, cursorpos) abort
+  let l:bufs = getcompletion(a:arglead, 'buffer')
+  return l:bufs + filter(getcompletion(a:arglead, 'file'), 'index(l:bufs, v:val) < 0')
 endfunction
 
 function! scratch#save(bang, path) abort

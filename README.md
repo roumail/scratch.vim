@@ -7,7 +7,7 @@ shell command or another buffer, that can be saved to a file later.
 | --- | --- |
 | `:Scratch[!]` | New scratch buffer in a vertical split (`!`: in the current window). |
 | `:ScratchFrom {cmd}` | Scratch buffer in the current window with the output of a shell command. |
-| `:[range]ScratchBuf[!] [buffer]` | Copy a buffer (or the range of the current one) into a new scratch buffer, keeping its filetype. |
+| `:[range]ScratchBuf[!] [buffer\|file]` | Copy a buffer (or the range of the current one), or a file that isn't open, into a new scratch buffer, keeping its filetype. |
 | `:ScratchSave[!] [path]` | Turn the scratch buffer into a file: `path`, or a timestamped `.txt` in `g:scratch_dir`. |
 
 `:ScratchFrom` pairs well with the quickfix list: `:ScratchFrom rg --vimgrep pattern`,

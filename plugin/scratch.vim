@@ -16,8 +16,9 @@ command! -nargs=+ ScratchFrom call scratch#from(<q-args>)
 
 " Copy a buffer into a new scratch buffer, keeping its filetype.
 " No argument or %: current buffer, limited to the range if one is given.
-" Otherwise: that whole buffer (name, number or #, <Tab> completes).
-command! -bang -range=% -nargs=? -complete=buffer ScratchBuf
+" Otherwise: that whole buffer (name, number or #), or else that file, read
+" without opening it (<Tab> completes both).
+command! -bang -range=% -nargs=? -complete=customlist,scratch#complete_buf ScratchBuf
       \ call scratch#buf(<bang>0, <line1>, <line2>, <q-args>)
 
 " Turn the scratch buffer into a file: the given path, or a timestamped file in
