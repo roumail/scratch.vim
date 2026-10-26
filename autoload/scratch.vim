@@ -45,7 +45,6 @@ function! scratch#buf(bang, line1, line2, buf) abort
   let &l:filetype = l:ft
 endfunction
 
-" :ScratchBuf completion: buffer names, then file paths
 function! scratch#complete_buf(arglead, cmdline, cursorpos) abort
   let l:bufs = getcompletion(a:arglead, 'buffer')
   return l:bufs + filter(getcompletion(a:arglead, 'file'), 'index(l:bufs, v:val) < 0')
