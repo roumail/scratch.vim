@@ -12,7 +12,7 @@ let g:scratch_dir = get(g:, 'scratch_dir', expand('~/scratch'))
 command! -bang Scratch call scratch#new(<bang>0)
 
 " Scratch buffer in the current window with the output of a shell command
-command! -nargs=+ ScratchFrom call scratch#from(<q-args>)
+command! -nargs=+ -complete=customlist,scratch#complete_from ScratchFrom call scratch#from(<q-args>)
 
 " Copy a buffer into a new scratch buffer, keeping its filetype.
 " No argument or %: current buffer, limited to the range if one is given.

@@ -45,6 +45,12 @@ function! scratch#buf(bang, line1, line2, buf) abort
   let &l:filetype = l:ft
 endfunction
 
+" The command, then files, as a shell would
+function! scratch#complete_from(arglead, cmdline, cursorpos) abort
+  let l:words = split(a:cmdline[: a:cursorpos - 1], '\s\+', 1)
+  return getcompletion(a:arglead, len(l:words) <= 2 ? 'shellcmd' : 'file')
+endfunction
+
 function! scratch#complete_buf(arglead, cmdline, cursorpos) abort
   let l:bufs = getcompletion(a:arglead, 'buffer')
   return l:bufs + filter(getcompletion(a:arglead, 'file'), 'index(l:bufs, v:val) < 0')
